@@ -35,9 +35,6 @@ import java.io.IOException;
 
   /* package for tests */ static void set(ParsePlugins plugins) {
     synchronized (LOCK) {
-      if (instance != null) {
-        throw new IllegalStateException("ParsePlugins is already initialized");
-      }
       instance = plugins;
     }
   }
