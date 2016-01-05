@@ -351,6 +351,8 @@ public class Parse {
   }
 
   public static void initialize(Configuration configuration) {
+    ParseCorePlugins.getInstance().reset();
+    ParsePlugins.reset();
     // NOTE (richardross): We will need this here, as ParsePlugins uses the return value of
     // isLocalDataStoreEnabled() to perform additional behavior.
     isLocalDatastoreEnabled = configuration.localDataStoreEnabled;
