@@ -510,7 +510,7 @@ public class ParseUser extends ParseObject {
         newStateBuilder.put(KEY_SESSION_TOKEN, getSessionToken());
       }
       // Avoid clearing authData when updating the current user's State via ParseQuery result
-      if (getAuthData() != null && newState.get(KEY_AUTH_DATA) == null) {
+      if (getAuthData().size() > 0 && newState.get(KEY_AUTH_DATA) == null) {
         newStateBuilder.put(KEY_AUTH_DATA, getAuthData());
       }
       newState = newStateBuilder.build();
@@ -1127,7 +1127,7 @@ public class ParseUser extends ParseObject {
     };
 
     // Handle claiming of user.
-    return getCurrentUserAsync().onSuccessTask(new Continuation<ParseUser, Task<ParseUser>>() {
+    return getCurrentUserController().getAsync(false).onSuccessTask(new Continuation<ParseUser, Task<ParseUser>>() {
       @Override
       public Task<ParseUser> then(Task<ParseUser> task) throws Exception {
         final ParseUser user = task.getResult();

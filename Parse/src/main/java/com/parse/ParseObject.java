@@ -51,7 +51,7 @@ import bolts.Task;
 public class ParseObject {
   /* package */ static String server = "https://api.parse.com";
   private static final String AUTO_CLASS_NAME = "_Automatic";
-  /* package */ static final String VERSION_NAME = "1.11.1-SNAPSHOT";
+  /* package */ static final String VERSION_NAME = "1.12.1-SNAPSHOT";
 
   /*
   REST JSON Keys
@@ -3397,7 +3397,7 @@ public class ParseObject {
         throw new RuntimeException("only ACLs can be stored in the ACL key");
       }
       if (mayCopy && ((ParseACL) acl).isShared()) {
-        ParseACL copy = ((ParseACL) acl).copy();
+        ParseACL copy = new ParseACL((ParseACL) acl);
         estimatedData.put(KEY_ACL, copy);
         return copy;
       }
