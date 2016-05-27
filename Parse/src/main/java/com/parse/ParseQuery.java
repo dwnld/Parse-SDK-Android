@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import bolts.Continuation;
 import bolts.Task;
+import bolts.TaskCompletionSource;
 
 /**
  * The {@code ParseQuery} class defines a query that is used to fetch {@link ParseObject}s. The most
@@ -90,6 +91,10 @@ public class ParseQuery<T extends ParseObject> {
 
   private static ParseQueryController getQueryController() {
     return ParseCorePlugins.getInstance().getQueryController();
+  }
+
+  private static ParseObjectSubclassingController getSubclassingController() {
+    return ParseCorePlugins.getInstance().getSubclassingController();
   }
 
   /**
@@ -361,7 +366,7 @@ public class ParseQuery<T extends ParseObject> {
       }
 
       public Builder(Class<T> subclass) {
-        this(ParseObject.getClassName(subclass));
+        this(getSubclassingController().getClassName(subclass));
       }
 
       public Builder(State state) {
@@ -886,7 +891,7 @@ public class ParseQuery<T extends ParseObject> {
 
   private final Object lock = new Object();
   private boolean isRunning = false;
-  private Task<Void>.TaskCompletionSource cts;
+  private TaskCompletionSource<Void> cts;
 
   /**
    * Constructs a query for a {@link ParseObject} subclass type. A default query with no further
@@ -896,7 +901,7 @@ public class ParseQuery<T extends ParseObject> {
    *          The {@link ParseObject} subclass type to retrieve.
    */
   public ParseQuery(Class<T> subclass) {
-    this(ParseObject.getClassName(subclass));
+    this(getSubclassingController().getClassName(subclass));
   }
 
   /**

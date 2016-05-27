@@ -17,11 +17,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import bolts.Continuation;
 import bolts.Task;
+import bolts.TaskCompletionSource;
 
 /** package */ class ParseRESTObjectBatchCommand extends ParseRESTCommand {
   public final static int COMMAND_OBJECT_BATCH_MAX_SIZE = 50;
@@ -50,9 +53,9 @@ import bolts.Task;
       return tasks;
     }
 
-    final List<Task<JSONObject>.TaskCompletionSource> tcss = new ArrayList<>(batchSize);
+    final List<TaskCompletionSource<JSONObject>> tcss = new ArrayList<>(batchSize);
     for (int i = 0; i < batchSize; i++) {
-      Task<JSONObject>.TaskCompletionSource tcs = Task.create();
+      TaskCompletionSource<JSONObject> tcs = new TaskCompletionSource<>();
       tcss.add(tcs);
       tasks.add(tcs.getTask());
     }
@@ -63,7 +66,7 @@ import bolts.Task;
       for (ParseRESTObjectCommand command : commands) {
         JSONObject requestParameters = new JSONObject();
         requestParameters.put("method", command.method.toString());
-        requestParameters.put("path", String.format("/1/%s", command.httpPath));
+        requestParameters.put("path", new URL(server, command.httpPath).getPath());
         JSONObject body = command.jsonParameters;
         if (body != null) {
           requestParameters.put("body", body);
@@ -73,6 +76,8 @@ import bolts.Task;
       parameters.put("requests", requests);
     } catch (JSONException e) {
       throw new RuntimeException(e);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
     }
 
     ParseRESTCommand command = new ParseRESTObjectBatchCommand(
@@ -81,7 +86,7 @@ import bolts.Task;
     command.executeAsync(client).continueWith(new Continuation<JSONObject, Void>() {
       @Override
       public Void then(Task<JSONObject> task) throws Exception {
-        Task<JSONObject>.TaskCompletionSource tcs;
+        TaskCompletionSource<JSONObject> tcs;
 
         if (task.isFaulted() || task.isCancelled()) {
           // REST command failed or canceled, fail or cancel all tasks

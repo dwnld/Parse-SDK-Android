@@ -40,6 +40,22 @@ public class ParseClientConfigurationTest {
   }
 
   @Test
+  public void testBuilderServerURL() {
+    Parse.Configuration.Builder builder = new Parse.Configuration.Builder(null);
+    builder.server("http://myserver.com/parse/");
+    Parse.Configuration configuration = builder.build();
+    assertEquals(configuration.server, "http://myserver.com/parse/");
+  }
+
+  @Test
+  public void testBuilderServerMissingSlashURL() {
+    Parse.Configuration.Builder builder = new Parse.Configuration.Builder(null);
+    builder.server("http://myserver.com/missingslash");
+    Parse.Configuration configuration = builder.build();
+    assertEquals(configuration.server, "http://myserver.com/missingslash/");
+  }
+
+  @Test
   public void testNetworkInterceptors() {
     ParseNetworkInterceptor interceptorA = mock(ParseNetworkInterceptor.class);
     ParseNetworkInterceptor interceptorB = mock(ParseNetworkInterceptor.class);
